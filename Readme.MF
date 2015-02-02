@@ -1,0 +1,3 @@
+http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/proguard-mojo.html#includeDependency
+=> show that dependencies are not included. As a result we may have to use another plugin first to package 
+all jars together before obfuscating
