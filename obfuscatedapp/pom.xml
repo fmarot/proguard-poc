@@ -8,17 +8,78 @@
 	<artifactId>obfuscatedapp</artifactId>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>com.teamtter</groupId>
-			<artifactId>shadedapp</artifactId>
+			<artifactId>simpleclient</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- this dependency is implicit (dependency of simpleclient) -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.teamtter</groupId> -->
+		<!-- <artifactId>simpleservice</artifactId> -->
+		<!-- <version>${project.version}</version> -->
+		<!-- </dependency> -->
 
 	</dependencies>
 
 	<build>
 		<plugins>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix> ./dependency/</classpathPrefix> <!-- so that you just need to run: mvn dependency:copy-dependencies && cd target && java -jar obfuscatedapp-0.0.1-SNAPSHOT.jar in target dir  -->
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			
+			<!-- Maven Shade Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath> 	<!-- is it needed ??? -->
+								</manifest>
+							</archive>
+
+							<artifactSet>
+								<includes>
+									<include>com.teamtter:*</include> <!-- only from the dependencies ;) -->
+								</includes>
+							</artifactSet>
+
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.teamtter.simpleclient.SimpleClient</mainClass>
+									<!-- <classPath>.</classPath> -->
+								</transformer>
+								<!-- Merges META-INF/services resources
+								<transformers> 
+									<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								</transformers>
+								 -->
+							</transformers>
+
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
@@ -31,17 +92,24 @@
 					</execution>
 				</executions>
 				<configuration>
-                    <obfuscate>true</obfuscate>
-                    <injar>shadedapp.jar</injar>
+					<obfuscate>true</obfuscate>
+<!-- 					<injar>shadedapp.jar</injar> -->
 <!--                     <outjar>${project.build.finalName}-small.jar</outjar> -->
 <!--                     <outputDirectory>${project.build.directory}</outputDirectory> -->
-                    <proguardInclude>${basedir}/proguard.conf</proguardInclude>
-                    <libs>
-                        <lib>${java.home}/lib/rt.jar</lib>
-                        <lib>${java.home}/lib/jsse.jar</lib>
-                    </libs>
-                </configuration>
+					<proguardInclude>${basedir}/proguard.pro</proguardInclude>
+					<libs>
+						<lib>${java.home}/lib/rt.jar</lib>
+						<lib>${java.home}/lib/jsse.jar</lib>
+					</libs>
+					 <exclusions>
+                        <exclusion>
+                            <groupId>com.teamtter</groupId>	<!-- third parties lib will be included but not those inside the parent project --> 
+                            <artifactId>*</artifactId>	 <!-- *Warning*: this means that parent projets's artifact should be uniquely identified by their  groupId ! -->
+                        </exclusion>
+                    </exclusions>
+				</configuration>
 			</plugin>
+			
 		</plugins>
 	</build>
 

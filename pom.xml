@@ -9,7 +9,6 @@
 	<modules>
 		<module>simpleclient</module>
 		<module>simpleservice</module>
-		<module>shadedapp</module>
 		<module>obfuscatedapp</module>
 	</modules>
 
