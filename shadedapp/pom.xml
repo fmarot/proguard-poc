@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.teamtter</groupId>
@@ -79,6 +78,36 @@
 				</executions>
 			</plugin>
 
+			<plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<obfuscate>true</obfuscate>
+<!-- 					<injar>shadedapp.jar</injar> -->
+<!--                     <outjar>${project.build.finalName}-small.jar</outjar> -->
+<!--                     <outputDirectory>${project.build.directory}</outputDirectory> -->
+					<proguardInclude>${basedir}/proguard.pro</proguardInclude>
+					<libs>
+						<lib>${java.home}/lib/rt.jar</lib>
+						<lib>${java.home}/lib/jsse.jar</lib>
+					</libs>
+					 <exclusions>
+                        <exclusion>
+                            <groupId>com.teamtter</groupId>	<!-- third parties lib will be included but not those inside the parent project --> 
+                            <artifactId>*</artifactId>	 <!-- *Warning*: this means that parent projets's artifact should be uniquely identified by their  groupId ! -->
+                        </exclusion>
+                    </exclusions>
+				</configuration>
+			</plugin>
+			
 		</plugins>
 	</build>
 

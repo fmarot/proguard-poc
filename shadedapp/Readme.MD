@@ -1,0 +1,1 @@
+shade and obfuscations are done in the same app as by default the obfuscator plugin obfuscate the resulting jar of the build of the project it is in
